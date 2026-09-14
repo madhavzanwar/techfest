@@ -30,7 +30,8 @@ class DataStore:
         self.unified_profiles = {p["child_id"]: p for p in unified_list}
 
         # Seed Escalation Queue for Critical and Watch cases
-        now = datetime.utcnow()
+        from datetime import timezone
+        now = datetime.now(timezone.utc)
         case_idx = 1
         for child_id, p in self.unified_profiles.items():
             risk_tier = p["risk"]["tier"]
@@ -39,19 +40,42 @@ class DataStore:
                 is_crit = (risk_tier == RiskTier.CRITICAL.value)
                 sla_hrs = settings.SLA_CRITICAL_HOURS if is_crit else settings.SLA_WATCH_HOURS
                 
-                # Assign elapsed hours realistically between 2 and 46 hours
-                elapsed_hrs = (case_idx * 1.7) % (sla_hrs * 1.1)
-                hours_remaining = round(sla_hrs - elapsed_hrs, 1)
-                
-                if hours_remaining <= 0:
+                # Realistic elapsed hours distribution with healthy variance
+                # case_idx modulo variation creates realistic spread: on track, approaching breach, breached, actioned
+                spread_seed = (case_idx * 7) % 100
+                if spread_seed < 15:
+                    # Breached
+                    elapsed_hrs = round(sla_hrs + (case_idx % 8) + 1.5, 1)
                     sla_status = "BREACHED"
-                elif hours_remaining <= 12:
+                    case_status = "PENDING_ACTION"
+                elif spread_seed < 35:
+                    # Approaching breach (urgent warning)
+                    elapsed_hrs = round(sla_hrs - (3 + (case_idx % 8)), 1)
                     sla_status = "APPROACHING_BREACH"
-                else:
+                    case_status = "PENDING_ACTION"
+                elif spread_seed < 85:
+                    # On track (standard queue)
+                    elapsed_hrs = round((case_idx * 2.3) % (sla_hrs * 0.65), 1)
                     sla_status = "ON_TRACK"
+                    case_status = "PENDING_ACTION"
+                else:
+                    # Already actioned by frontline supervisor
+                    elapsed_hrs = round((case_idx * 1.5) % (sla_hrs * 0.7), 1)
+                    sla_status = "ON_TRACK"
+                    case_status = "ACTIONED"
+
+                hours_remaining = max(0.0, round(sla_hrs - elapsed_hrs, 1))
 
                 assigned_role = "PHC Medical Officer & CDPO" if is_crit else "ASHA Lead & Anganwadi Supervisor"
                 
+                latest_act = None
+                act_by = None
+                act_notes = None
+                if case_status == "ACTIONED":
+                    latest_act = "THR_DOUBLE_RATION_ISSUED" if not is_crit else "PHC_DOCTOR_EXAMINATION"
+                    act_by = "AWW Sunita Padvi" if not is_crit else "Dr. V. Patil (MO)"
+                    act_notes = "Beneficiary assessed and emergency intervention logged per SOP."
+
                 case = EscalationCase(
                     case_id=case_id,
                     child_id=child_id,
@@ -65,8 +89,11 @@ class DataStore:
                     sla_hours=sla_hrs,
                     hours_remaining=hours_remaining,
                     sla_status=sla_status,
-                    case_status="PENDING_ACTION",
-                    created_at=(now - timedelta(hours=elapsed_hrs)).isoformat() + "Z"
+                    case_status=case_status,
+                    created_at=(now - timedelta(hours=elapsed_hrs)).isoformat(),
+                    latest_action=latest_act,
+                    action_taken_by=act_by,
+                    action_notes=act_notes
                 )
                 self.escalation_cases[case_id] = case
                 case_idx += 1

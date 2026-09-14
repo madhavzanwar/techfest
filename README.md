@@ -4,7 +4,7 @@
 
 [![Tests](https://img.shields.io/badge/pytest-17%20passed-brightgreen.svg)](backend/tests/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB.svg)](frontend/)
+[![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite%20%2B%20Tailwind%20%2B%20Framer-61DAFB.svg)](frontend/)
 [![DPDP Act](https://img.shields.io/badge/DPDP%20Act%202023-Compliant-blueviolet.svg)](DPDP_COMPLIANCE_NOTE.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -21,99 +21,148 @@ Yet, severe undernutrition persists in underserved tribal belts (such as **Nandu
 2. **Early-Warning Velocity Detection**: Fuses WHO Child Growth Standards (2006) LMS Z-scores with **60-day longitudinal growth velocity ($\Delta WHZ$)**, catching children faltering rapidly **3 to 6 weeks before SAM manifests**.
 3. **Actionable Role-Based Escalation**: Enforces administrative SLAs (**48h for Critical SAM/NRC referral; 7 days for Watch/AWW home visit**) with role-based decision rights.
 4. **DPDP Act, 2023 Compliance by Design**: Embeds explicit guardian consent tracking, strict Section 8 PII minimization (names masked to initials above block level), and an immutable SQLite audit ledger.
+5. **Clinical Decision-Support Console**: Built on an editorial paper & clinical cobalt design system (Tailwind CSS, PostCSS, Framer Motion) replacing generic dashboards with high-density, accessible clinical workflows.
 
 ---
 
-## 2. Repository Structure
+## 2. Visual Walkthrough & System Views
+
+| 1. Epidemiological Macro Overview | 2. Clinical Triage Escalation Worklist |
+| :---: | :---: |
+| ![Epidemiological Overview](screenshots/01_epidemiological_overview.png) | ![Triage Escalation](screenshots/02_triage_escalation_queue.png) |
+| *Macro KPIs, stunting/wasting rates, and tribal block distribution* | *Priority triage queue with SLA tracking (48h Critical / 7d Watch)* |
+
+| 3. Beneficiary Registry & Dynamic RBAC | 4. Longitudinal Growth Velocity Inspection |
+| :---: | :---: |
+| ![Child Registry](screenshots/03_child_registry_rbac.png) | ![Growth Velocity Modal](screenshots/04_longitudinal_growth_modal.png) |
+| *High-density tabular registry with DPDP Section 8 masking* | *WHZ trajectory against WHO -2 SD / -3 SD cutoffs & ASHA record* |
+
+| 5. Dual-Silo Interoperability Gateway (ABDM) | 6. DPDP Act, 2023 Governance & Audit Ledger |
+| :---: | :---: |
+| ![Interoperability Gateway](screenshots/05_interoperability_abdm_gateway.png) | ![DPDP Audit Governance](screenshots/06_dpdp_audit_governance.png) |
+| *Hybrid identity resolution & FHIR R4 clinical observation export* | *Statutory compliance mapping & tamper-evident SQLite audit ledger* |
+
+---
+
+## 3. Repository Structure
 
 ```
 techfest_iit bombay/
 ├── backend/
+│   ├── requirements.txt           # Pinned backend dependencies
 │   ├── app/
 │   │   ├── __init__.py
-│   │   ├── main.py                    # FastAPI application entry point & CORS
+│   │   ├── main.py                # FastAPI app entry point, static mount, and CORS
 │   │   ├── api/
-│   │   │   └── routes.py              # REST API endpoints (overview, children, escalations, ABDM)
+│   │   │   └── routes.py          # REST endpoints (overview, children, escalations, ABDM)
 │   │   ├── core/
-│   │   │   ├── config.py              # Project settings, thresholds, SLAs
-│   │   │   └── security.py            # RBAC enforcer, SQLite audit logger, DPDP masking
+│   │   │   ├── config.py          # Project settings, thresholds, SLAs
+│   │   │   └── security.py        # RBAC enforcer, SQLite audit logger, DPDP masking
 │   │   ├── models/
-│   │   │   └── schemas.py             # Pydantic schemas (profiles, risks, visits, cases)
+│   │   │   └── schemas.py         # Pydantic schemas (profiles, risks, visits, cases)
 │   │   └── data_engine/
-│   │       ├── state.py               # In-memory fast state indexer
-│   │       ├── who_standards.py       # WHO 2006 LMS curves & Z-score formulas (WAZ, HAZ, WHZ)
-│   │       ├── risk_scorer.py         # Multi-parameter triage engine & velocity faltering
+│   │       ├── state.py           # In-memory fast state indexer
+│   │       ├── who_standards.py   # WHO 2006 LMS curves & Z-score formulas (WAZ, HAZ, WHZ)
+│   │       ├── risk_scorer.py     # Multi-parameter triage engine & velocity faltering
 │   │       ├── identity_resolution.py # Hybrid record linkage & ABDM FHIR R4 exporter
 │   │       └── synthetic_generator.py # 3,500 child cohort calibrated to NFHS-5 Nandurbar
 │   └── tests/
-│       ├── test_who_standards.py      # Benchmark tests against published WHO Anthro tables
-│       ├── test_risk_scorer.py        # Clinical emergency and velocity drop test suite
-│       ├── test_identity_resolution.py# Deterministic ABHA, soundex, and cross-block tests
-│       └── test_api.py                # REST endpoint, RBAC masking, and action logging tests
+│       ├── test_who_standards.py  # Benchmark tests against published WHO Anthro tables
+│       ├── test_risk_scorer.py    # Clinical emergency and velocity drop test suite
+│       ├── test_identity_resolution.py # Deterministic ABHA, soundex, and cross-block tests
+│       └── test_api.py            # REST endpoint, RBAC masking, and action logging tests
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Navigation.jsx         # Header, role switcher, active indicators
-│   │   │   ├── OverviewView.jsx       # Macro KPIs, triage donut, cross-block comparison, trend
-│   │   │   ├── EscalationView.jsx     # Actionable triage queue, SLA countdowns, intervention modal
-│   │   │   ├── ChildrenView.jsx       # Searchable registry with RBAC PII redaction
-│   │   │   ├── InteroperabilityView.jsx # Silo reconciliation stats, live match simulator, FHIR R4
-│   │   │   ├── GovernanceView.jsx     # DPDP Act 2023 mapping & real-time audit ledger
-│   │   │   └── ChildDetailModal.jsx   # Deep longitudinal growth velocity curves & ASHA records
-│   │   ├── App.jsx
+│   │   │   ├── Navigation.jsx     # Institutional header, RBAC selector, active indicators
+│   │   │   ├── OverviewView.jsx   # Macro KPIs, triage donut, cross-block comparison, trend
+│   │   │   ├── EscalationView.jsx # Actionable triage worklist, SLA badges, intervention modal
+│   │   │   ├── ChildrenView.jsx   # High-density registry with RBAC PII redaction
+│   │   │   ├── InteroperabilityView.jsx # Dual-silo stats, live match simulator, FHIR R4
+│   │   │   ├── GovernanceView.jsx # DPDP Act 2023 mapping & real-time audit ledger
+│   │   │   └── ChildDetailModal.jsx # Deep longitudinal growth velocity curves & ASHA records
+│   │   ├── App.jsx                # Layout shell with Framer Motion tab transitions
 │   │   ├── main.jsx
-│   │   └── index.css
-│   ├── package.json
+│   │   └── index.css              # PostCSS Tailwind directives & clinical-card surfaces
+│   ├── package.json               # Vite, React 18, Tailwind CSS, PostCSS, Lucide, Framer Motion
+│   ├── tailwind.config.js         # Custom paper/clinical palette design tokens
+│   ├── postcss.config.js          # Tailwind & Autoprefixer PostCSS configuration
 │   └── vite.config.js
-├── screenshots/                       # High-resolution dashboard screenshots for competition PDF
+├── screenshots/                   # High-resolution dashboard screenshots (1440x960 @ 2x DPI)
 │   ├── 01_epidemiological_overview.png
 │   ├── 02_triage_escalation_queue.png
 │   ├── 03_child_registry_rbac.png
 │   ├── 04_longitudinal_growth_modal.png
 │   ├── 05_interoperability_abdm_gateway.png
 │   └── 06_dpdp_audit_governance.png
-├── DATA_ASSUMPTIONS.md                # Statistical distributions from NFHS-5 and WHO standards
-├── ARCHITECTURE.md                    # 4-layer architectural specification and Mermaid diagrams
-├── DPDP_COMPLIANCE_NOTE.md            # Design-to-obligation statutory mapping under DPDP Act 2023
-├── ROUND1_SUMMARY.md                  # Drop-in sections for official 6-page Round 1 Proposal PDF
-└── README.md                          # This file
+├── capture_screenshots.py         # Automated Playwright script generating all competition visuals
+├── run_dev.py                     # Cross-platform Python dev runner (concurrent backend + frontend)
+├── run_dev.sh                     # Linux / macOS shell dev runner
+├── run_dev.bat                    # Windows batch dev runner
+├── DATA_ASSUMPTIONS.md            # Statistical distributions from NFHS-5 and WHO standards
+├── ARCHITECTURE.md                # 4-layer architectural specification and Mermaid diagrams
+├── DPDP_COMPLIANCE_NOTE.md        # Design-to-obligation statutory mapping under DPDP Act 2023
+├── ROUND1_SUMMARY.md              # Drop-in sections for official 6-page Round 1 Proposal PDF
+└── README.md                      # This file
 ```
 
 ---
 
-## 3. Quick Start & Execution Instructions
+## 4. Quick Start & Execution Instructions
 
 ### Prerequisites
 - Python 3.10+ (tested on Python 3.13)
 - Node.js v18+ (tested on Node.js v24)
 - Git
 
-### Step 1: Run Backend Server
+### One-Command Full Stack Launcher (Recommended)
+You can run the entire platform (backend API on `:8000` + frontend console) with a single command:
+
 ```bash
-# From repository root
+# Windows / Linux / macOS:
+python run_dev.py
+```
+*(Or use `./run_dev.sh` on Linux/macOS, or `run_dev.bat` on Windows)*
+
+---
+
+### Step-by-Step Manual Setup
+
+#### 1. Backend Installation & Server
+```bash
+# Install pinned backend dependencies
+pip install -r backend/requirements.txt
+
+# Run FastAPI backend server
 python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-- API will be accessible at: `http://localhost:8000`
-- Interactive Swagger API Documentation: `http://localhost:8000/docs`
+- API & Single-Page Application: `http://localhost:8000`
+- Interactive OpenAPI / Swagger Docs: `http://localhost:8000/docs`
 
-### Step 2: Run Frontend Dashboard
+#### 2. Frontend Development Server
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-- Frontend will open at: `http://localhost:5173`
+- Vite HMR Dev Server: `http://localhost:5173`
 
-### Step 3: Run Automated Unit Tests
+#### 3. Production Frontend Build
 ```bash
-# From repository root
+cd frontend
+npm run build
+```
+*(FastAPI automatically serves `frontend/dist` at `http://localhost:8000/`)*
+
+#### 4. Run Automated Test Suite
+```bash
 python -m pytest backend/tests -v
 ```
-*(All 17 tests verify WHO LMS calculations, velocity early warnings, RBAC PII redaction, and ABDM matching.)*
+*(17/17 tests passing in < 1 second: verifies WHO LMS mathematics, velocity detection, RBAC PII redaction, and ABDM record linkage.)*
 
 ---
 
-## 4. Key API Endpoints
+## 5. Key API Endpoints
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
@@ -129,7 +178,7 @@ python -m pytest backend/tests -v
 
 ---
 
-## 5. Mapping to Competition Judging Rubric
+## 6. Mapping to Competition Judging Rubric
 
 | Judging Rubric Criterion | Implementation in Poshan-Suraksha | Evidence File |
 | :--- | :--- | :--- |

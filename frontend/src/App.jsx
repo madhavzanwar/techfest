@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Navigation from './components/Navigation';
 import OverviewView from './components/OverviewView';
 import EscalationView from './components/EscalationView';
@@ -30,7 +31,7 @@ export default function App() {
   }, [currentRole]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 flex flex-col font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
       {/* Top Fixed Navigation */}
       <Navigation
         activeTab={activeTab}
@@ -40,59 +41,71 @@ export default function App() {
         systemStats={stats}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        {activeTab === 'overview' && (
-          <OverviewView 
-            stats={stats} 
-            onNavigateToEscalations={() => setActiveTab('escalations')} 
-          />
-        )}
+      {/* Main Content Area with Animated Tab Transitions */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+          >
+            {activeTab === 'overview' && (
+              <OverviewView 
+                stats={stats} 
+                onNavigateToEscalations={() => setActiveTab('escalations')} 
+              />
+            )}
 
-        {activeTab === 'escalations' && (
-          <EscalationView 
-            onSelectChild={(id) => setSelectedChildId(id)} 
-            currentRole={currentRole}
-          />
-        )}
+            {activeTab === 'escalations' && (
+              <EscalationView 
+                onSelectChild={(id) => setSelectedChildId(id)} 
+                currentRole={currentRole}
+              />
+            )}
 
-        {activeTab === 'children' && (
-          <ChildrenView 
-            currentRole={currentRole}
-            onSelectChild={(id) => setSelectedChildId(id)}
-          />
-        )}
+            {activeTab === 'children' && (
+              <ChildrenView 
+                currentRole={currentRole}
+                onSelectChild={(id) => setSelectedChildId(id)}
+              />
+            )}
 
-        {activeTab === 'interop' && (
-          <InteroperabilityView />
-        )}
+            {activeTab === 'interop' && (
+              <InteroperabilityView />
+            )}
 
-        {activeTab === 'governance' && (
-          <GovernanceView />
-        )}
+            {activeTab === 'governance' && (
+              <GovernanceView />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Child Detailed Inspection Modal */}
-      {selectedChildId && (
-        <ChildDetailModal
-          childId={selectedChildId}
-          onClose={() => setSelectedChildId(null)}
-          currentRole={currentRole}
-        />
-      )}
+      <AnimatePresence>
+        {selectedChildId && (
+          <ChildDetailModal
+            childId={selectedChildId}
+            onClose={() => setSelectedChildId(null)}
+            currentRole={currentRole}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Institutional Footer */}
-      <footer className="border-t border-slate-800 bg-slate-900/60 py-6 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-2">
-            <span className="font-bold text-slate-200">The India @ 71/100 Challenge</span>
-            <span>•</span>
+      {/* Institutional Light Clinical Footer */}
+      <footer className="border-t border-slate-200/80 bg-white/70 backdrop-blur py-5 text-xs text-slate-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center space-x-2 text-slate-700">
+            <span className="font-semibold text-slate-900">India @ 71/100 Challenge</span>
+            <span className="text-slate-300">•</span>
             <span>Techfest, IIT Bombay 2026-27</span>
-            <span>•</span>
-            <span className="text-sky-400">Theme 1: Maternal &amp; Early Childhood Nutrition</span>
+            <span className="text-slate-300">•</span>
+            <span className="text-blue-700 font-medium">Theme 1: Maternal &amp; Early Childhood Nutrition</span>
           </div>
-          <div className="text-slate-500 text-[11px]">
-            Statistically seeded via NFHS-5 &amp; WHO Child Growth Standards (Simulated Tribal District: Nandurbar, Maharashtra)
+          <div className="text-slate-600 text-[11px] font-mono">
+            Calibrated via NFHS-5 microdata &amp; WHO Growth Standards (Simulated: Nandurbar, MH)
           </div>
         </div>
       </footer>

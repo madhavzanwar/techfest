@@ -46,8 +46,9 @@ class AuditManager:
         conn.close()
 
     def log(self, user_role: str, user_id: str, action: str, resource: str, justification: str, pii_redacted: bool, client_ip: str = "127.0.0.1"):
+        from datetime import timezone
         ip_hash = hashlib.sha256(client_ip.encode()).hexdigest()[:12]
-        now = datetime.utcnow().isoformat() + "Z"
+        now = datetime.now(timezone.utc).isoformat()
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         cursor.execute("""
@@ -81,7 +82,8 @@ class AuditManager:
         ]
 
     def record_escalation_action(self, case_id: str, child_id: str, action_type: str, officer_name: str, notes: str):
-        now = datetime.utcnow().isoformat() + "Z"
+        from datetime import timezone
+        now = datetime.now(timezone.utc).isoformat()
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         cursor.execute("""

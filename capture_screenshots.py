@@ -1,6 +1,6 @@
 """
 Automated Screenshot Capture Script for Poshan-Suraksha Platform.
-Captures all 6 competition dashboard views.
+Captures all 6 competition dashboard views with high-DPI rendering.
 """
 import time
 import threading
@@ -36,21 +36,21 @@ def capture_all():
         # 1. Epidemiological Overview
         print(" -> Capturing 01_epidemiological_overview.png...")
         page.goto("http://127.0.0.1:8000")
-        page.wait_for_selector("text=Closing the \"Data-to-Action\" Gap", timeout=15000)
+        page.wait_for_selector("text=Total Cohort", timeout=15000)
         time.sleep(2)
         page.screenshot(path="screenshots/01_epidemiological_overview.png", full_page=False)
 
         # 2. Triage Escalation Queue
         print(" -> Capturing 02_triage_escalation_queue.png...")
-        page.click("text=Early-Warning Escalation Queue")
-        page.wait_for_selector("text=Triage Escalation Queue & Decision Rights", timeout=10000)
+        page.click("text=Triage Escalation Worklist")
+        page.wait_for_selector("text=Clinical Triage Worklist", timeout=10000)
         time.sleep(1.5)
         page.screenshot(path="screenshots/02_triage_escalation_queue.png", full_page=False)
 
         # 3. Child Registry & Velocity
         print(" -> Capturing 03_child_registry_rbac.png...")
-        page.click("text=Child Registry & Velocity")
-        page.wait_for_selector("text=Child Registry & Anthropometric Velocity Monitoring", timeout=10000)
+        page.click("text=Patient Registry & Velocity")
+        page.wait_for_selector("text=Beneficiary Registry", timeout=10000)
         time.sleep(1.5)
         page.screenshot(path="screenshots/03_child_registry_rbac.png", full_page=False)
 
@@ -65,14 +65,14 @@ def capture_all():
         print(" -> Capturing 05_interoperability_abdm_gateway.png...")
         page.goto("http://127.0.0.1:8000")
         time.sleep(1)
-        page.click("text=Identity Resolution (ABDM/ASHA)")
-        page.wait_for_selector("text=Reconciliation Coverage", timeout=10000)
+        page.click("text=Dual-Silo Gateway")
+        page.wait_for_selector("text=Dual-Silo Reconciliation", timeout=10000)
         time.sleep(2)
         page.screenshot(path="screenshots/05_interoperability_abdm_gateway.png", full_page=False)
 
         # 6. DPDP Act & Audit Log Governance
         print(" -> Capturing 06_dpdp_audit_governance.png...")
-        page.click("text=DPDP Act & Audit Log")
+        page.click("text=DPDP Governance & Audit")
         page.wait_for_selector("text=Digital Personal Data Protection (DPDP) Act, 2023 Compliance", timeout=10000)
         time.sleep(2)
         page.screenshot(path="screenshots/06_dpdp_audit_governance.png", full_page=False)

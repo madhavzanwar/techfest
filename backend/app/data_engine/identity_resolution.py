@@ -220,10 +220,11 @@ class IdentityResolver:
             }]
         }
 
+        from datetime import timezone
         return {
             "resourceType": "Bundle",
             "type": "collection",
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "entry": [
                 {"resource": fhir_patient},
                 {"resource": fhir_observation}
