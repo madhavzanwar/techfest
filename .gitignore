@@ -40,3 +40,5 @@ frontend/.nyc_output
 Thumbs.db
 .vscode/
 .idea/
+
+.vercel

@@ -94,18 +94,18 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Institutional Light Clinical Footer */}
-      <footer className="border-t border-slate-200/80 bg-white/70 backdrop-blur py-5 text-xs text-slate-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center space-x-2 text-slate-700">
-            <span className="font-semibold text-slate-900">India @ 71/100 Challenge</span>
+      {/* Operational Clinical Footer */}
+      <footer className="border-t border-slate-200/80 bg-white/70 backdrop-blur py-4 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold text-slate-800">POSHAN-SURAKSHA</span>
             <span className="text-slate-300">•</span>
-            <span>Techfest, IIT Bombay 2026-27</span>
+            <span>v1.0.0 Operational Console</span>
             <span className="text-slate-300">•</span>
-            <span className="text-blue-700 font-medium">Theme 1: Maternal &amp; Early Childhood Nutrition</span>
+            <span className="text-slate-600">Clinical Early-Warning &amp; Decision-Support System</span>
           </div>
-          <div className="text-slate-600 text-[11px] font-mono">
-            Calibrated via NFHS-5 microdata &amp; WHO Growth Standards (Simulated: Nandurbar, MH)
+          <div className="text-[11px] text-slate-500 font-mono">
+            WHO Child Growth Standards • ABDM FHIR R4 Interoperability • Nandurbar Pilot
           </div>
         </div>
       </footer>

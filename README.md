@@ -7,6 +7,15 @@
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite%20%2B%20Tailwind%20%2B%20Framer-61DAFB.svg)](frontend/)
 [![DPDP Act](https://img.shields.io/badge/DPDP%20Act%202023-Compliant-blueviolet.svg)](DPDP_COMPLIANCE_NOTE.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Deployment](https://img.shields.io/badge/Vercel-Live%20Production-success.svg)](https://poshan-suraksha.vercel.app)
+
+> ### 🌐 Live Cloud Deployment & Verification Links
+> - **Production Web Application**: [https://poshan-suraksha.vercel.app](https://poshan-suraksha.vercel.app)
+> - **Live REST API Health Gateway**: [https://poshan-suraksha.vercel.app/api/health](https://poshan-suraksha.vercel.app/api/health)
+> - **GitHub Repository**: [https://github.com/madhavzanwar/techfest](https://github.com/madhavzanwar/techfest)
+> - **Official Round 1 Submission PDF (A4, 6 Pages)**: [India71_100_TM-7B0FA91321F.pdf](India71_100_TM-7B0FA91321F.pdf)
+> 
+> *Team Name: Bright India | Team ID: TM-7B0FA91321F | Institution: Pimpri Chinchwad College Of Engineering, Pune*
 
 ---
 

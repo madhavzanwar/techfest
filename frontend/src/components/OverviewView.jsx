@@ -60,7 +60,7 @@ export default function OverviewView({ stats, onNavigateToEscalations }) {
         <div className="max-w-4xl relative">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold mb-3">
             <Activity className="h-3.5 w-3.5 text-blue-600" />
-            <span>Techfest IIT Bombay 2026-27 • Theme 1: Maternal &amp; Early Childhood Nutrition</span>
+            <span>Operational Clinical Intelligence • Mission Poshan 2.0 × Ayushman Bharat</span>
           </div>
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 font-display leading-snug">
             Shifting Nutrition Infrastructure from Retrospective Audits to Proactive Clinical Triage

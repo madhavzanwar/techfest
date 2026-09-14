@@ -1,14 +1,14 @@
 """
 Core configuration settings for the Nutrition Early-Warning & Decision Support System.
-Techfest IIT Bombay — India @ 71/100 Challenge.
 """
+import os
 from pathlib import Path
 from pydantic import BaseModel
 
 class Settings(BaseModel):
     PROJECT_NAME: str = "Poshan-Suraksha: Nutrition Early-Warning & Escalation Platform"
     PROJECT_VERSION: str = "1.0.0"
-    THEME: str = "Maternal & Early Childhood Nutrition — Techfest IIT Bombay"
+    THEME: str = "Maternal & Early Childhood Nutrition — Decision-Support System"
     DISTRICT_NAME: str = "Nandurbar"
     STATE_NAME: str = "Maharashtra"
     BLOCKS: list[str] = ["Dhadgaon", "Akkalkuwa", "Shahada", "Taloda", "Nandurbar Rural"]
@@ -16,7 +16,7 @@ class Settings(BaseModel):
     # Path settings
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
     DATA_DIR: Path = BASE_DIR / "data"
-    DB_PATH: Path = BASE_DIR / "poshan_suraksha.db"
+    DB_PATH: Path = Path("/tmp/poshan_suraksha.db") if os.environ.get("VERCEL") else BASE_DIR / "poshan_suraksha.db"
     
     # Risk thresholds
     NORMAL_THRESHOLD: float = 35.0

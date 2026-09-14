@@ -36,8 +36,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount API endpoints under /api
+import os
+
+# Mount API endpoints under /api and root
 app.include_router(api_router, prefix="/api")
+app.include_router(api_router, prefix="")
 
 # Serve frontend build if dist directory exists
 from pathlib import Path
@@ -51,8 +54,8 @@ else:
     def root():
         return {
             "platform": settings.PROJECT_NAME,
-            "competition": "Techfest, IIT Bombay (2026-27) — The India @ 71/100 Challenge",
-            "theme": settings.THEME,
+            "version": settings.PROJECT_VERSION,
+            "domain": settings.THEME,
             "api_docs": "/docs",
             "endpoints": {
                 "health": "/api/health",

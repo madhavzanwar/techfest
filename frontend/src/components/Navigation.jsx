@@ -43,7 +43,7 @@ export default function Navigation({ activeTab, setActiveTab, currentRole, setCu
               </span>
             </div>
             <p className="text-xs text-slate-500 font-normal">
-              Maternal &amp; Child Nutrition Platform • Techfest, IIT Bombay 2026-27 (Theme 1)
+              Early-Warning Nutrition Decision-Support System • Poshan 2.0 Operational Console
             </p>
           </div>
         </div>
